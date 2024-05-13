@@ -70,3 +70,6 @@ class Programmer extends Employee
 $yamada = new Programmer("山田",Programmer::CONTRACT);
 $yamada->work();
 echo $yamada->getName();
+
+
+//次はp.134　標準クラスとキャスト
