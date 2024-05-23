@@ -55,5 +55,3 @@ some_func();
 echo BBB\SOME_CONST;
 
 echo SOME_CONST;
-
-//次回、p.155 動的な名前空間の利用から
