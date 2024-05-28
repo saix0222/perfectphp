@@ -5,39 +5,32 @@
 //組み込み関数は例外ではなくエラーを報告する
 //PDOなどで例外が使われている
 
-//設定によってい標準のエラーを例外に変換することもできる
+//設定によって標準のエラーを例外に変換することもできる
 
+//本に記載のあるErrorのキャッチ方法はPHP5系まで
 /*set_error_handler(function ($errno, $errstr, $errfile, $errline)
 {
-    echo "error";
-    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+    throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
 
 try{
+    new Closure();
     strpos();
-}catch(ErrorException $e){
-    var_dump($e);
-    //echo 'Error occured!', PHP_EOL;
-    //echo $e->getMessage(), PHP_EOL;
-    //echo 'Stack Trace:', PHP_EOL;
-    //echo $e->getTraceAsString();
-}*/
-
-/*function exception_error_handler(int $errno, string $errstr, string $errfile = null, int $errline) {
-    echo "ttt";
-    if (!(error_reporting() & $errno)) {
-        // このエラーコードが error_reporting に含まれていない場合
-        return;
-    }
-    throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+}catch(\Error $e){
+    echo 'Error occured!', PHP_EOL;
+    echo $e->getMessage(), PHP_EOL;
+    echo 'Stack Trace:', PHP_EOL;
+    echo $e->getTraceAsString();
 }
-set_error_handler(exception_error_handler(...));*/
-// PHP 8.1.0 より前のバージョン、つまり 第一級callableを生成する記法 が実装される前は、下記の呼び出しが必要です
-// set_error_handler(__NAMESPACE__ . "\\exception_error_handler");
+*/
 
-/* 例外を発生させます */
-//strpos();
+//PHp7以降、PHPエンジンのエラーの一部が/Errorに変換されるようになった
+//PHPバージョンに応じて/Errorの適用範囲が増えている
+try{
+    strpos();
+}catch(\Error $e){
+    var_dump($e->getMessage());
+}
 
-//https://www.php.net/manual/ja/class.errorexception.php
-
-//次回、上記で何が起きてるのか理解するところから！
+//下記はこの部分のバージョン差を理解するのにめちゃくちゃ助かった参考文献
+//https://fortee.jp/phperkaigi-2021/proposal/e1e0ebd8-d60c-42ed-b6e6-9a7602258d42
