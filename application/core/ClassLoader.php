@@ -14,7 +14,7 @@ class ClassLoader
         $this->dirs[] = $dir;
     }
 
-    public funtion loadClass($class)
+    public function loadClass($class)
     {
         foreach ($this->dirs as $dir){
             $file = $dir . '/'. $class . '.php';
