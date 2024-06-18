@@ -3,8 +3,10 @@
 class DBManager
 {
     protected $connections = array();
+    protected $repository_connection_map = array();
+    protected $repositories = array();
 
-    public function connect($name, $params);
+    public function connect($name, $params)
     {
         $params = array_merge(array(
             'dsn'       => null,
@@ -32,5 +34,47 @@ class DBManager
         }
 
         return $this->connections[$name];
+    }
+
+    public function setRepositoryConnectionMap($repository_name, $name)
+    {
+        $this->repositoyry_connection_map[$repository_name] = $name;
+    }
+
+    public function getConnectForRepository($repository_name)
+    {
+        if (isset($this->repository_connection_map[$repository_name])){
+            $name = $this->repository_connection_map[$repository_name];
+            $con = $this->getConnection($name);
+        } else {
+            $con = $this->getConnection();
+        }
+
+        return $con;
+    }
+
+    public function get($repository_name)
+    {
+        if(!isset($this->repositories[$repository_name])){
+            $repository_class = $repository_name . 'Repository';
+            $con = $this->getConnectionForRepository($repository_name);
+
+            $repository = new $repository_class($con);
+
+            $this->repositories[$repository_name] = $repository;
+        }
+
+        return $this->repositories[$repository_name];
+    }
+
+    public function __destruct()
+    {
+        foreach ($this->repositories as $repository){
+            unset($repository);
+        }
+
+        foreach ($this->connections as $con){
+            unset($con);
+        }
     }
 }
