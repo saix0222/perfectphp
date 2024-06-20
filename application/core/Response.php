@@ -17,4 +17,20 @@ class Response
 
         echo $this->content;
     }
+
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    public function setStatusCode($status_code, $status_text = '')
+    {
+        $this->status_code = $status_code;
+        $this->status_text = $status_text;
+    }
+
+    public function setHttpHeader($name, $value)
+    {
+        $this->http_headers[$name] = $value;
+    }
 }

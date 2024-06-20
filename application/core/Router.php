@@ -1,83 +1,50 @@
 <?php
 
-class Request
+class Router
 {
-    public function isPost()
+    protected $routes;
+
+    public function __construct($definitions)
     {
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
-            return true;
+        $this->routes = $his->compileRoutes($definitions);
+    }
+
+    public function compileRoutes($definitions)
+    {
+        $routes = array();
+
+        foreach ($definitions as $url => params){
+            $tokens = explode('/' ltrim($url, '/'));
+            foreach($tokens as $i => $token){
+                if(0 === strpos($token, ':')){
+                    $name = substr($token, 1);
+                    $token = '(?P<' . $name . '>[^/]+)';
+                }
+                $tokens[$i] = $token;
+            }
+
+            $pattern = '/' . implode('/', $tokens);
+            $routes[$pattern] = $params;
         }
 
-        return false;
+        return $routes;
     }
 
-    public function getGet($name, $default = null)
+    public function resolve($path_info)
     {
-        if(isset($_GET[$name])){
-            return $_GET[$name];
+        if('/' !== substr($path_info, 0, 1)){
+            $path_info = '/' . $path_info;
         }
 
-        return $default;
-    }
+        foreach($this->routes as $pattrn => $params){
+            if(preg_match('#^' . $pattern . '$#', $path_info, $matches)){
+                $params = array_merge($params, $maches);
 
-    public function getPost($name, $default = null)
-    {
-        if(isset($_POST[$name])){
-            return $_POST[$name]
+                return $params;
+            }
+
+            return false;
         }
-
-        return $default;
     }
-
-    public function getHost()
-    {
-        if(!empty($_SERVER['HTTP_HOST'])){
-            return $_SERVER['HTTP_HOST'];
-        }
-
-        return $_SERVER['SERVER_NAME'];
-    }
-
-    public function isSssl()
-    {
-        if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'){
-            retunr true;
-        }
-
-        return false;
-    }
-
-    public function getRequestUri()
-    {
-        return $_SERVER['REQUEST_URI'];
-    }
-
-    public function getBaseUrl()
-    {
-        $script_name = $_SERVER['SCRIPT_NAME'];
-
-        $request_url = $this->getRequestUri();
-
-        if(0 === strpos($request_url,$script_name)){
-            return $script_name;
-        }else if (0 ===strpos($request_uri, dirname($script_name))){
-            return rtrim(dirname($script_name), '/');
-        }
-
-        return '';
-    }
-
-    public function getPathInfo()
-    {
-        $base_url = $this->getBaseUrl();
-        $requesturi = $this->getRequestUri();
-
-        if(false !== ($pos = strpos($request_uri, '?'))){
-            $request_uri = substr($request_uri,0,$pos);
-        }
-
-        $path_info = (string)substr($request_uri, strlen($base_url));
-
-        return $path_info;
-    }
+    
 }
